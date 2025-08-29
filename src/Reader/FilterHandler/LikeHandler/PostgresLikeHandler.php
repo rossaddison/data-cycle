@@ -10,7 +10,6 @@ use Yiisoft\Data\Reader\FilterInterface;
 
 final class PostgresLikeHandler extends BaseLikeHandler implements QueryBuilderFilterHandler
 {
-    #[\Override]
     public function getAsWhereArguments(FilterInterface $filter, array $handlers): array
     {
         /** @var Like $filter */

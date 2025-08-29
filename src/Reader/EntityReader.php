@@ -74,7 +74,6 @@ final class EntityReader implements DataReaderInterface
         $this->filter = new All();
     }
 
-    #[\Override]
     public function getSort(): ?Sort
     {
         return $this->sorting;
@@ -83,7 +82,6 @@ final class EntityReader implements DataReaderInterface
     /**
      * @psalm-mutation-free
      */
-    #[\Override]
     public function withLimit(?int $limit): static
     {
         /** @psalm-suppress DocblockTypeContradiction */
@@ -106,7 +104,6 @@ final class EntityReader implements DataReaderInterface
     /**
      * @psalm-mutation-free
      */
-    #[\Override]
     public function withOffset(int $offset): static
     {
         $new = clone $this;
@@ -125,7 +122,6 @@ final class EntityReader implements DataReaderInterface
     /**
      * @psalm-mutation-free
      */
-    #[\Override]
     public function withSort(?Sort $sort): static
     {
         $new = clone $this;
@@ -145,7 +141,6 @@ final class EntityReader implements DataReaderInterface
     /**
      * @psalm-mutation-free
      */
-    #[\Override]
     public function withFilter(FilterInterface $filter): static
     {
         $new = clone $this;
@@ -167,7 +162,6 @@ final class EntityReader implements DataReaderInterface
     /**
      * @return static
      */
-    #[\Override]
     public function withAddedFilterHandlers(FilterHandlerInterface ...$filterHandlers): static
     {
         $new = clone $this;
@@ -178,7 +172,6 @@ final class EntityReader implements DataReaderInterface
         return $new;
     }
 
-    #[\Override]
     public function count(): int
     {
         return $this->countCache->getCount();
@@ -188,7 +181,6 @@ final class EntityReader implements DataReaderInterface
      * @psalm-suppress LessSpecificImplementedReturnType
      * @return iterable
      */
-    #[\Override]
     public function read(): iterable
     {
         if ($this->itemsCache->getCollection() === null) {
@@ -198,7 +190,6 @@ final class EntityReader implements DataReaderInterface
         return $this->itemsCache->getCollection();
     }
 
-    #[\Override]
     public function readOne(): null|array|object
     {
         if (!$this->oneItemCache->isCollected()) {
@@ -222,7 +213,6 @@ final class EntityReader implements DataReaderInterface
     /**
      * Get Iterator without caching
      */
-    #[\Override]
     public function getIterator(): Generator
     {
         yield from $this->itemsCache->getCollection() ?? $this->buildSelectQuery()->getIterator();
@@ -312,19 +302,16 @@ final class EntityReader implements DataReaderInterface
         return $criteria;
     }
 
-    #[\Override]
     public function getFilter(): FilterInterface
     {
         return $this->filter;
     }
 
-    #[\Override]
     public function getLimit(): ?int
     {
         return $this->limit;
     }
 
-    #[\Override]
     public function getOffset(): int
     {
         return $this->offset;

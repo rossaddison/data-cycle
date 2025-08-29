@@ -11,13 +11,11 @@ use Yiisoft\Data\Reader\FilterInterface;
 
 final class EqualsNullHandler implements QueryBuilderFilterHandler, FilterHandlerInterface
 {
-    #[\Override]
     public function getFilterClass(): string
     {
         return EqualsNull::class;
     }
 
-    #[\Override]
     public function getAsWhereArguments(FilterInterface $filter, array $handlers): array
     {
         /** @var EqualsNull $filter */

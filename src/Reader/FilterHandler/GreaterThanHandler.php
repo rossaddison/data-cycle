@@ -11,13 +11,11 @@ use Yiisoft\Data\Reader\FilterInterface;
 
 final class GreaterThanHandler implements QueryBuilderFilterHandler, FilterHandlerInterface
 {
-    #[\Override]
     public function getFilterClass(): string
     {
         return GreaterThan::class;
     }
 
-    #[\Override]
     public function getAsWhereArguments(FilterInterface $filter, array $handlers): array
     {
         /** @var GreaterThan $filter */

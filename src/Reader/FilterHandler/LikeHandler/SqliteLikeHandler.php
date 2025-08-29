@@ -17,7 +17,6 @@ final class SqliteLikeHandler extends BaseLikeHandler implements QueryBuilderFil
         '_' => '\_',
     ];
 
-    #[\Override]
     /**
      * @param FilterInterface $filter
      * @psalm-param Like $filter

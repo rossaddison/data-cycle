@@ -16,7 +16,6 @@ final class SqlServerLikeHandler extends BaseLikeHandler implements QueryBuilder
         unset($this->escapingReplacements['\\']);
     }
 
-    #[\Override]
     public function getAsWhereArguments(FilterInterface $filter, array $handlers): array
     {
         /** @var Like $filter */

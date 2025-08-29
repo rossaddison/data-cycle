@@ -16,7 +16,6 @@ abstract class BaseLikeHandler implements FilterHandlerInterface
         '\\' => '\\\\',
     ];
 
-    #[\Override]
     public function getFilterClass(): string
     {
         return Like::class;
