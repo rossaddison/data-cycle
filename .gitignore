@@ -26,3 +26,8 @@ composer.phar
 /phpunit.phar
 /phpunit.xml
 /.phpunit.cache
+
+# Reports and cache directories
+/reports
+/runtime/cache
+/private/cache

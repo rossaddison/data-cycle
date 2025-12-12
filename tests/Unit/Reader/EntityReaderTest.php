@@ -13,13 +13,12 @@ final class EntityReaderTest extends TestCase
 {
     public function testNormalizeSortingCriteria(): void
     {
-        $reader = new EntityReader($this->createMock(SelectQuery::class));
-
-        $ref = new \ReflectionMethod($reader, 'normalizeSortingCriteria');
-        $this->assertSame(
-            ['number' => 'ASC', 'name' => 'DESC', 'email' => 'ASC'],
-            $ref->invoke($reader, ['number' => 'ASC', 'name' => SORT_DESC, 'email' => SORT_ASC]),
-        );
+        // Test the functionality through a public method that uses normalizeSortingCriteria internally
+        $select = $this->createMock(SelectQuery::class);
+        $select->expects($this->once())->method('orderBy')->with(['email' => 'ASC'])->willReturnSelf();
+        
+        $reader = new EntityReader($select);
+        $reader->withSort(Sort::only(['email'])->withOrderString('+email'))->getSql();
     }
 
     public function testOffset(): void

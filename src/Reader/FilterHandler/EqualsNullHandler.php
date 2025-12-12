@@ -6,10 +6,11 @@ namespace Yiisoft\Data\Cycle\Reader\FilterHandler;
 
 use Yiisoft\Data\Cycle\Reader\QueryBuilderFilterHandler;
 use Yiisoft\Data\Reader\Filter\EqualsNull;
-use Yiisoft\Data\Reader\FilterHandlerInterface;
+use Yiisoft\Data\Reader\Iterable\Context;
+use Yiisoft\Data\Reader\Iterable\IterableFilterHandlerInterface;
 use Yiisoft\Data\Reader\FilterInterface;
 
-final class EqualsNullHandler implements QueryBuilderFilterHandler, FilterHandlerInterface
+final class EqualsNullHandler implements QueryBuilderFilterHandler, IterableFilterHandlerInterface
 {
     #[\Override]
     public function getFilterClass(): string
@@ -23,5 +24,16 @@ final class EqualsNullHandler implements QueryBuilderFilterHandler, FilterHandle
         /** @var EqualsNull $filter */
 
         return [$filter->field, '=', null];
+    }
+    
+    #[\Override]
+    public function match(object|array $item, FilterInterface $filter, Context $context): bool
+    {
+        /** 
+         * @var EqualsNull $filter
+         * @var int|string|float|null $context->readValue($item, $filter->field) 
+         */
+
+        return $context->readValue($item, $filter->field) === null;
     }
 }

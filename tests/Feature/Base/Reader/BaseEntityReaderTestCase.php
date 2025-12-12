@@ -18,6 +18,8 @@ use Yiisoft\Data\Cycle\Tests\Support\NotSupportedFilter;
 use Yiisoft\Data\Cycle\Tests\Support\StubFilter;
 use Yiisoft\Data\Cycle\Tests\Support\StubFilterHandler;
 use Yiisoft\Data\Reader\Filter\Equals;
+use Yiisoft\Data\Reader\Iterable\ValueReader\FlatValueReader;
+use Yiisoft\Data\Reader\Iterable\ValueReader\ValueReaderInterface;
 use Yiisoft\Data\Reader\Sort;
 use Yiisoft\Data\Tests\Common\FixtureTrait;
 
@@ -157,15 +159,18 @@ abstract class BaseEntityReaderTestCase extends TestCase
 
     public function testFilterHandlers(): void
     {
-        $baseReader = (new EntityReader($this->select('user')))->withAddedFilterHandlers(new StubFilterHandler());
+        $baseReader = (new EntityReader(
+            $this->select('user'),
+            $valueReader = new FlatValueReader(),
+            $addFilterHandlers = [],
+        ));
 
         $reader = $baseReader->withFilter(new Equals('number', 2));
         $this->assertFixtures([1], $reader->read());
 
-        $reader = $reader->withFilter(new StubFilter());
-        $this->expectException(StatementException::class);
-        $this->expectExceptionMessageMatches('/symbol/i');
-        $reader->read();
+        $this->expectException(NotSupportedFilterException::class);
+        $this->expectExceptionMessage('Filter "Yiisoft\Data\Cycle\Tests\Support\StubFilter" is not supported.');
+        $reader->withFilter(new StubFilter());
     }
 
     public static function dataGetSql(): array
@@ -309,43 +314,6 @@ SQL,
         $countCacheQuery = $refCountCacheQuery->getValue($countCache);
 
         $this->assertNotSame($query, $countCacheQuery, 'CachedCount should get a cloned query');
-    }
-
-    public function testWithAddedFilterHandlersDoesNotMutateOriginal(): void
-    {
-        $reader = new EntityReader($this->select('user'));
-        $refHandlers = new \ReflectionProperty($reader, 'filterHandlers');
-        /** @var array $originalHandlers **/
-        $originalHandlers = $refHandlers->getValue($reader);
-
-        $newReader = $reader->withAddedFilterHandlers(new StubFilterHandler());
-        /** @var array $newHandlers **/
-        $newHandlers = $refHandlers->getValue($newReader);
-
-        // The original reader's handlers should remain unchanged
-        $this->assertSame($originalHandlers, $refHandlers->getValue($reader));
-        // The new reader's handlers should be different
-        $this->assertNotSame($originalHandlers, $newHandlers);
-    }
-
-    public function testWithAddedFilterHandlersResetsCountCache(): void
-    {
-        $reader = new EntityReader($this->select('user'));
-
-        // Prime the countCache with a dummy object
-        $refCountCache = new \ReflectionProperty($reader, 'countCache');
-        $dummyCache = new CachedCount($this->select('user'));
-        $refCountCache->setValue($reader, $dummyCache);
-
-        $newReader = $reader->withAddedFilterHandlers(new StubFilterHandler());
-        $newReaderCountCache = (new \ReflectionProperty($newReader, 'countCache'));
-
-        // Count cache should be reset (should not be the same object)
-        $this->assertNotSame(
-            $dummyCache,
-            $newReaderCountCache->getValue($newReader),
-            'Count cache should be reset in new instance',
-        );
     }
 
     public function testReadOneReturnsOnlyOneItem(): void

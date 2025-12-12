@@ -6,10 +6,11 @@ namespace Yiisoft\Data\Cycle\Reader\FilterHandler;
 
 use Yiisoft\Data\Cycle\Reader\QueryBuilderFilterHandler;
 use Yiisoft\Data\Reader\Filter\GreaterThan;
-use Yiisoft\Data\Reader\FilterHandlerInterface;
+use Yiisoft\Data\Reader\Iterable\Context;
+use Yiisoft\Data\Reader\Iterable\IterableFilterHandlerInterface;
 use Yiisoft\Data\Reader\FilterInterface;
 
-final class GreaterThanHandler implements QueryBuilderFilterHandler, FilterHandlerInterface
+final class GreaterThanHandler implements QueryBuilderFilterHandler, IterableFilterHandlerInterface
 {
     #[\Override]
     public function getFilterClass(): string
@@ -23,5 +24,19 @@ final class GreaterThanHandler implements QueryBuilderFilterHandler, FilterHandl
         /** @var GreaterThan $filter */
 
         return [$filter->field, '>', $filter->value];
+    }
+    
+    #[\Override]
+    public function match(array|object $item, FilterInterface $filter, Context $context): bool
+    {
+        /**
+         * @var GreaterThan $filter
+         * @var int|string|float|null $itemValue
+         */
+
+        $itemValue = $context->readValue($item, $filter->field);
+        $argumentValue = $filter->value;
+
+        return $itemValue > $argumentValue;
     }
 }

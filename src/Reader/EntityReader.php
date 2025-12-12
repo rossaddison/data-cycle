@@ -12,10 +12,27 @@ use Generator;
 use InvalidArgumentException;
 use Yiisoft\Data\Cycle\Exception\NotSupportedFilterException;
 use Yiisoft\Data\Cycle\Reader\FilterHandler\LikeHandler\LikeHandlerFactory;
+use Yiisoft\Data\Cycle\Reader\QueryBuilderFilterHandler;
 use Yiisoft\Data\Reader\DataReaderInterface;
 use Yiisoft\Data\Reader\Filter\All;
-use Yiisoft\Data\Reader\FilterHandlerInterface;
+use Yiisoft\Data\Reader\Iterable\Context;
+use Yiisoft\Data\Reader\Iterable\IterableFilterHandlerInterface;
 use Yiisoft\Data\Reader\FilterInterface;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\AllHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\AndXHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\NoneHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\OrXHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\BetweenHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\EqualsHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\EqualsNullHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\GreaterThanHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\GreaterThanOrEqualHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\InHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\LessThanHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\LessThanOrEqualHandler;
+use Yiisoft\Data\Cycle\Reader\FilterHandler\NotHandler;
+use Yiisoft\Data\Reader\Iterable\ValueReader\FlatValueReader;
+use Yiisoft\Data\Reader\Iterable\ValueReader\ValueReaderInterface;
 use Yiisoft\Data\Reader\Sort;
 use Yiisoft\Data\Cycle\Reader\Cache\CachedCollection;
 use Yiisoft\Data\Cycle\Reader\Cache\CachedCount;
@@ -34,17 +51,25 @@ final class EntityReader implements DataReaderInterface
      */
     private ?int $limit = null;
     private int $offset = 0;
+    private Context $context;
     private ?Sort $sorting = null;
     private FilterInterface $filter;
     private CachedCount $countCache;
     private CachedCollection $itemsCache;
     private CachedCollection $oneItemCache;
+    
+    private array $filterHandlers;
+    
     /**
-     * @psalm-var array<class-string, FilterHandlerInterface & QueryBuilderFilterHandler> $handlers
+     * @param Select|SelectQuery $query
+     * @param ValueReaderInterface $valueReader
+     * @param IterableFilterHandlerInterface[] $extraFilterHandlers
      */
-    private array $filterHandlers = [];
-
-    public function __construct(Select|SelectQuery $query)
+    public function __construct(
+        Select|SelectQuery $query,
+        ValueReaderInterface $valueReader = new FlatValueReader(),
+        array $extraFilterHandlers = [],
+    )
     {
         $this->query = clone $query;
         $this->countCache = new CachedCount($this->query);
@@ -55,22 +80,24 @@ final class EntityReader implements DataReaderInterface
          * @psalm-suppress UndefinedMagicMethod The magic method is not defined in annotations.
          */
         $likeHandler = LikeHandlerFactory::getLikeHandler($this->query->getDriver()?->getType() ?? 'SQLite');
-        $this->setFilterHandlers(
-            new FilterHandler\AllHandler(),
-            new FilterHandler\NoneHandler(),
-            new FilterHandler\AndXHandler(),
-            new FilterHandler\OrXHandler(),
-            new FilterHandler\BetweenHandler(),
-            new FilterHandler\EqualsHandler(),
-            new FilterHandler\EqualsNullHandler(),
-            new FilterHandler\GreaterThanHandler(),
-            new FilterHandler\GreaterThanOrEqualHandler(),
-            new FilterHandler\InHandler(),
-            new FilterHandler\LessThanHandler(),
-            new FilterHandler\LessThanOrEqualHandler(),
+        $this->filterHandlers = $this->prepareFilterHandlers([
+            new AllHandler(),
+            new NoneHandler(),
+            new AndXHandler(),
+            new OrXHandler(),
+            new BetweenHandler(),
+            new EqualsHandler(),
+            new EqualsNullHandler(),
+            new GreaterThanHandler(),
+            new GreaterThanOrEqualHandler(),
+            new InHandler(),
+            new LessThanHandler(),
+            new LessThanOrEqualHandler(),
             $likeHandler,
-            new FilterHandler\NotHandler(),
-        );
+            new NotHandler(),
+            ...$extraFilterHandlers,
+        ]);
+        $this->context = new Context($this->filterHandlers, $valueReader);
         $this->filter = new All();
     }
 
@@ -92,6 +119,10 @@ final class EntityReader implements DataReaderInterface
         }
         $new = clone $this;
 
+        if ($new === $this) {
+            throw new \RuntimeException('Query was not properly cloned!');
+        }
+
         if ($new->limit !== $limit) {
             $new->limit = $limit;
             $new->itemsCache = new CachedCollection();
@@ -99,10 +130,17 @@ final class EntityReader implements DataReaderInterface
         return $new;
     }
 
+    /**
+     * @psalm-mutation-free
+     */
     #[\Override]
     public function withOffset(int $offset): static
     {
         $new = clone $this;
+
+        if ($new === $this) {
+            throw new \RuntimeException('Query was not properly cloned!');
+        }
 
         if ($new->offset !== $offset) {
             $new->offset = $offset;
@@ -111,10 +149,17 @@ final class EntityReader implements DataReaderInterface
         return $new;
     }
 
+    /**
+     * @psalm-mutation-free
+     */
     #[\Override]
     public function withSort(?Sort $sort): static
     {
         $new = clone $this;
+
+        if ($new === $this) {
+            throw new \RuntimeException('Query was not properly cloned!');
+        }
 
         if ($new->sorting !== $sort) {
             $new->sorting = $sort;
@@ -124,10 +169,17 @@ final class EntityReader implements DataReaderInterface
         return $new;
     }
 
+    /**
+     * @psalm-mutation-free
+     */
     #[\Override]
     public function withFilter(FilterInterface $filter): static
     {
         $new = clone $this;
+
+        if ($new === $this) {
+            throw new \RuntimeException('Query was not properly cloned!');
+        }
 
         if ($new->filter !== $filter) {
             $new->filter = $filter;
@@ -136,20 +188,6 @@ final class EntityReader implements DataReaderInterface
             /** @psalm-suppress ImpureMethodCall */
             $new->resetCountCache();
         }
-        return $new;
-    }
-
-    /**
-     * @return static
-     */
-    #[\Override]
-    public function withAddedFilterHandlers(FilterHandlerInterface ...$filterHandlers): static
-    {
-        $new = clone $this;
-        $new->setFilterHandlers(...$filterHandlers);
-        $new->resetCountCache();
-        $new->itemsCache = new CachedCollection();
-        $new->oneItemCache = new CachedCollection();
         return $new;
     }
 
@@ -181,7 +219,9 @@ final class EntityReader implements DataReaderInterface
             $item = $this->itemsCache->isCollected()
                 // get the first item from a cached collection
                 ? $this->itemsCache->getGenerator()->current()
-                : $this->withLimit(1)->getIterator()->current();
+                // Option 1: read data with limit 1: use $this->withLimit(1)->getIterator()->current();
+                // Option 2: less efficient
+                : $this->getIterator()->current();
             $this->oneItemCache->setCollection($item === null ? [] : [$item]);
         }
         /**
@@ -207,15 +247,22 @@ final class EntityReader implements DataReaderInterface
         return (string) ($query instanceof Select ? $query->buildQuery() : $query);
     }
 
-    private function setFilterHandlers(FilterHandlerInterface ...$filterHandlers): void
+    /**
+     * Prepare Context's first argument of filterHandlers which expects
+     * array<string, IterableFilterHandlerInterface>
+     *
+     * @psalm-return array<string, IterableFilterHandlerInterface> $filterHandlers
+     */
+    private function prepareFilterHandlers(array $filterHandlers): array
     {
-        $handlers = [];
+        $result = [];
+        /**
+         * @var IterableFilterHandlerInterface $filterHandler
+         */
         foreach ($filterHandlers as $filterHandler) {
-            if ($filterHandler instanceof QueryBuilderFilterHandler) {
-                $handlers[$filterHandler->getFilterClass()] = $filterHandler;
-            }
+            $result[$filterHandler->getFilterClass()] = $filterHandler;
         }
-        $this->filterHandlers = array_merge($this->filterHandlers, $handlers);
+        return $result;
     }
 
     private function buildSelectQuery(): SelectQuery|Select
@@ -242,14 +289,21 @@ final class EntityReader implements DataReaderInterface
             if (!array_key_exists($filter::class, $this->filterHandlers)) {
                 throw new NotSupportedFilterException($filter::class);
             }
+            /** @var QueryBuilderFilterHandler $handler */
             $handler = $this->filterHandlers[$filter::class];
-            $select->where(...$handler->getAsWhereArguments($filter, $this->filterHandlers));
+            $arguments = $handler->getAsWhereArguments($filter, $this->filterHandlers);
+            $select->where(...$arguments);
         };
     }
 
     private function resetCountCache(): void
     {
         $newQuery = clone $this->query;
+
+        // Ensure the clone worked: a clone is never identical to the original: different instances
+        if ($newQuery === $this->query) {
+            throw new \RuntimeException('Query was not properly cloned; $newQuery and $this->query are the same instance!');
+        }
 
         if (!$this->filter instanceof All) {
             $newQuery->andWhere($this->makeFilterClosure($this->filter));

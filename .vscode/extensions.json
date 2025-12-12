@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "bmewburn.vscode-intelephense-client",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-xml",
+        "felixfbecker.php-debug",
+        "sanmai.phpunit-watcher",
+        "getpsalm.psalm-vscode-plugin"
+    ]
+}

@@ -13,7 +13,10 @@ final class MysqlLikeHandler extends BaseLikeHandler implements QueryBuilderFilt
     #[\Override]
     public function getAsWhereArguments(FilterInterface $filter, array $handlers): array
     {
-        /** @var Like $filter */
+        /**
+         * @var Like $filter
+         * @var string $filter->value 
+         */
         $pattern = $this->prepareValue($filter->value, $filter->mode);
 
         if ($filter->caseSensitive !== true) {

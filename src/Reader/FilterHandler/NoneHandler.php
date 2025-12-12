@@ -6,11 +6,12 @@ namespace Yiisoft\Data\Cycle\Reader\FilterHandler;
 
 use Yiisoft\Data\Cycle\Reader\QueryBuilderFilterHandler;
 use Yiisoft\Data\Reader\Filter\None;
-use Yiisoft\Data\Reader\FilterHandlerInterface;
+use Yiisoft\Data\Reader\Iterable\Context;
+use Yiisoft\Data\Reader\Iterable\IterableFilterHandlerInterface;
 use Yiisoft\Data\Reader\FilterInterface;
 use Cycle\Database\Injection\Expression;
 
-final class NoneHandler implements QueryBuilderFilterHandler, FilterHandlerInterface
+final class NoneHandler implements QueryBuilderFilterHandler, IterableFilterHandlerInterface
 {
     #[\Override]
     public function getFilterClass(): string
@@ -22,5 +23,11 @@ final class NoneHandler implements QueryBuilderFilterHandler, FilterHandlerInter
     public function getAsWhereArguments(FilterInterface $filter, array $handlers): array
     {
         return [new Expression('1 = 0')];
+    }
+    
+    #[\Override]
+    public function match(array|object $item, FilterInterface $filter, Context $context): bool
+    {
+        return false;
     }
 }

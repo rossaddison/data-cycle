@@ -18,10 +18,11 @@ use Yiisoft\Data\Reader\Filter\LessThan;
 use Yiisoft\Data\Reader\Filter\LessThanOrEqual;
 use Yiisoft\Data\Reader\Filter\Like;
 use Yiisoft\Data\Reader\Filter\Not;
-use Yiisoft\Data\Reader\FilterHandlerInterface;
+use Yiisoft\Data\Reader\Iterable\Context;
+use Yiisoft\Data\Reader\Iterable\IterableFilterHandlerInterface;
 use Yiisoft\Data\Reader\FilterInterface;
 
-final class NotHandler implements QueryBuilderFilterHandler, FilterHandlerInterface
+final class NotHandler implements QueryBuilderFilterHandler, IterableFilterHandlerInterface
 {
     #[\Override]
     public function getFilterClass(): string
@@ -36,6 +37,8 @@ final class NotHandler implements QueryBuilderFilterHandler, FilterHandlerInterf
 
         $convertedFilter = $this->convertFilter($filter->filter);
         $handledFilter = $convertedFilter instanceof Not ? $convertedFilter->filter : $convertedFilter;
+        
+        /** @var QueryBuilderFilterHandler|null $handler */
         $handler = $handlers[$handledFilter::class] ?? null;
         if ($handler === null) {
             throw new NotSupportedFilterException($handledFilter::class);
@@ -47,6 +50,7 @@ final class NotHandler implements QueryBuilderFilterHandler, FilterHandlerInterf
         }
 
         $operator = (string) $where[1];
+        // avoid using a match statement to prevent a mutant escape
         if ($operator === 'between') {
             $where[1] = 'not between';
         } elseif ($operator === 'in') {
@@ -100,5 +104,16 @@ final class NotHandler implements QueryBuilderFilterHandler, FilterHandlerInterf
         }
 
         return $notCount % 2 === 1 ? new Not($filter->filter) : $filter->filter;
+    }
+    
+    #[\Override]
+    public function match(array|object $item, FilterInterface $filter, Context $context): bool
+    {
+        /** @var Not $filter */
+
+        $subFilter = $filter->filter;
+
+        $filterHandler = $context->getFilterHandler($subFilter::class);
+        return !$filterHandler->match($item, $subFilter, $context);
     }
 }
