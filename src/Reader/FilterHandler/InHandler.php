@@ -26,7 +26,7 @@ final class InHandler implements QueryBuilderFilterHandler, IterableFilterHandle
 
         return [$filter->field, 'in', new Parameter($filter->values)];
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {

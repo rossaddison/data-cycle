@@ -25,13 +25,13 @@ final class EqualsNullHandler implements QueryBuilderFilterHandler, IterableFilt
 
         return [$filter->field, '=', null];
     }
-    
+
     #[\Override]
     public function match(object|array $item, FilterInterface $filter, Context $context): bool
     {
-        /** 
+        /**
          * @var EqualsNull $filter
-         * @var int|string|float|null $context->readValue($item, $filter->field) 
+         * @var float|int|string|null $context->readValue($item, $filter->field)
          */
 
         return $context->readValue($item, $filter->field) === null;

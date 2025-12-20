@@ -25,13 +25,13 @@ final class GreaterThanHandler implements QueryBuilderFilterHandler, IterableFil
 
         return [$filter->field, '>', $filter->value];
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {
         /**
          * @var GreaterThan $filter
-         * @var int|string|float|null $itemValue
+         * @var float|int|string|null $itemValue
          */
 
         $itemValue = $context->readValue($item, $filter->field);

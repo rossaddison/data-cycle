@@ -19,9 +19,9 @@ final class SqlServerLikeHandler extends BaseLikeHandler implements QueryBuilder
     #[\Override]
     public function getAsWhereArguments(FilterInterface $filter, array $handlers): array
     {
-        /** 
-         * @var Like $filter         
-         * @var string $filter->value   
+        /**
+         * @var Like $filter
+         * @var string $filter->value
          */
         $pattern = $this->prepareValue($filter->value, $filter->mode);
 

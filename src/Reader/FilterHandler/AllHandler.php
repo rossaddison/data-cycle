@@ -23,7 +23,7 @@ final class AllHandler implements QueryBuilderFilterHandler, IterableFilterHandl
     {
         return [];
     }
-    
+
     #[\Override]
     public function match(object|array $item, FilterInterface $filter, Context $context): bool
     {

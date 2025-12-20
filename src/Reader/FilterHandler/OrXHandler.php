@@ -38,7 +38,7 @@ final class OrXHandler implements QueryBuilderFilterHandler, IterableFilterHandl
             },
         ];
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {

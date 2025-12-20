@@ -39,7 +39,7 @@ abstract class BaseLikeHandler implements IterableFilterHandlerInterface
             LikeMode::EndsWith => '%' . $escapedValue,
         };
     }
-    
+
     #[\Override]
     public function match(object|array $item, FilterInterface $filter, Context $context): bool
     {
@@ -54,7 +54,7 @@ abstract class BaseLikeHandler implements IterableFilterHandlerInterface
         if ($searchValue === '') {
             return true;
         }
-        
+
         /**
          * @var string $searchValue
          */

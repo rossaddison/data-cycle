@@ -16,7 +16,7 @@ final class EntityReaderTest extends TestCase
         // Test the functionality through a public method that uses normalizeSortingCriteria internally
         $select = $this->createMock(SelectQuery::class);
         $select->expects($this->once())->method('orderBy')->with(['email' => 'ASC'])->willReturnSelf();
-        
+
         $reader = new EntityReader($select);
         $reader->withSort(Sort::only(['email'])->withOrderString('+email'))->getSql();
     }

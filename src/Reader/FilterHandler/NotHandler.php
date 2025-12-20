@@ -37,7 +37,7 @@ final class NotHandler implements QueryBuilderFilterHandler, IterableFilterHandl
 
         $convertedFilter = $this->convertFilter($filter->filter);
         $handledFilter = $convertedFilter instanceof Not ? $convertedFilter->filter : $convertedFilter;
-        
+
         /** @var QueryBuilderFilterHandler|null $handler */
         $handler = $handlers[$handledFilter::class] ?? null;
         if ($handler === null) {
@@ -105,7 +105,7 @@ final class NotHandler implements QueryBuilderFilterHandler, IterableFilterHandl
 
         return $notCount % 2 === 1 ? new Not($filter->filter) : $filter->filter;
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {
