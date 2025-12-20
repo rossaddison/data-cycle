@@ -40,7 +40,7 @@ final class AndXHandler implements QueryBuilderFilterHandler, IterableFilterHand
             },
         ];
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {

@@ -25,13 +25,13 @@ final class BetweenHandler implements QueryBuilderFilterHandler, IterableFilterH
 
         return [$filter->field, 'between', $filter->minValue, $filter->maxValue];
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {
         /**
          * @var Between $filter
-         * @var int|string|float|null $value
+         * @var float|int|string|null $value
          */
         $value = $context->readValue($item, $filter->field);
         $min = $filter->minValue;

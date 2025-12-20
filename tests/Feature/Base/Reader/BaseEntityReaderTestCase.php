@@ -6,7 +6,6 @@ namespace Yiisoft\Data\Cycle\Tests\Feature\Base\Reader;
 
 use Cycle\Database\Query\SelectQuery;
 use Cycle\ORM\Select;
-use Cycle\Database\Exception\StatementException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Data\Cycle\Exception\NotSupportedFilterException;
@@ -16,10 +15,8 @@ use Yiisoft\Data\Cycle\Reader\EntityReader;
 use Yiisoft\Data\Cycle\Tests\Feature\DataTrait;
 use Yiisoft\Data\Cycle\Tests\Support\NotSupportedFilter;
 use Yiisoft\Data\Cycle\Tests\Support\StubFilter;
-use Yiisoft\Data\Cycle\Tests\Support\StubFilterHandler;
 use Yiisoft\Data\Reader\Filter\Equals;
 use Yiisoft\Data\Reader\Iterable\ValueReader\FlatValueReader;
-use Yiisoft\Data\Reader\Iterable\ValueReader\ValueReaderInterface;
 use Yiisoft\Data\Reader\Sort;
 use Yiisoft\Data\Tests\Common\FixtureTrait;
 

@@ -15,7 +15,7 @@ final class PostgresLikeHandler extends BaseLikeHandler implements QueryBuilderF
     {
         /**
          * @var Like $filter
-         * @var string $filter->value 
+         * @var string $filter->value
          */
         $pattern = $this->prepareValue($filter->value, $filter->mode);
 

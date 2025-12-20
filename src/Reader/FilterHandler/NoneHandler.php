@@ -24,7 +24,7 @@ final class NoneHandler implements QueryBuilderFilterHandler, IterableFilterHand
     {
         return [new Expression('1 = 0')];
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {

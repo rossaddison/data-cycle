@@ -23,7 +23,7 @@ final class StubFilterHandler implements QueryBuilderFilterHandler, IterableFilt
         /** @var StubFilter $filter */
         return ['field', 'symbol', 'value'];
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {

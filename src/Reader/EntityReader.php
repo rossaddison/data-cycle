@@ -12,7 +12,6 @@ use Generator;
 use InvalidArgumentException;
 use Yiisoft\Data\Cycle\Exception\NotSupportedFilterException;
 use Yiisoft\Data\Cycle\Reader\FilterHandler\LikeHandler\LikeHandlerFactory;
-use Yiisoft\Data\Cycle\Reader\QueryBuilderFilterHandler;
 use Yiisoft\Data\Reader\DataReaderInterface;
 use Yiisoft\Data\Reader\Filter\All;
 use Yiisoft\Data\Reader\Iterable\Context;
@@ -57,9 +56,9 @@ final class EntityReader implements DataReaderInterface
     private CachedCount $countCache;
     private CachedCollection $itemsCache;
     private CachedCollection $oneItemCache;
-    
+
     private array $filterHandlers;
-    
+
     /**
      * @param Select|SelectQuery $query
      * @param ValueReaderInterface $valueReader
@@ -69,8 +68,7 @@ final class EntityReader implements DataReaderInterface
         Select|SelectQuery $query,
         ValueReaderInterface $valueReader = new FlatValueReader(),
         array $extraFilterHandlers = [],
-    )
-    {
+    ) {
         $this->query = clone $query;
         $this->countCache = new CachedCount($this->query);
         $this->itemsCache = new CachedCollection();

@@ -25,14 +25,14 @@ final class LessThanOrEqualHandler implements QueryBuilderFilterHandler, Iterabl
 
         return [$filter->field, '<=', $filter->value];
     }
-    
+
     #[\Override]
     public function match(array|object $item, FilterInterface $filter, Context $context): bool
     {
-         /**
-          * @var LessThanOrEqual $filter
-          * @var int|string|float|null $itemValue
-          */
+        /**
+         * @var LessThanOrEqual $filter
+         * @var float|int|string|null $itemValue
+         */
 
         $itemValue = $context->readValue($item, $filter->field);
         $argumentValue = $filter->value;
@@ -41,6 +41,6 @@ final class LessThanOrEqualHandler implements QueryBuilderFilterHandler, Iterabl
             return false;
         }
 
-        return $itemValue <= $argumentValue;        
+        return $itemValue <= $argumentValue;
     }
 }
