@@ -21,6 +21,8 @@ on:
       - 'psalm.xml'
 
 name: pgsql
+permissions:
+  contents: read
 
 jobs:
   tests:
