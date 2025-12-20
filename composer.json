@@ -34,15 +34,15 @@
     "require": {
         "php": "8.1 - 8.4",
         "ext-mbstring": "*",
-        "cycle/database": "^2.15",
-        "cycle/orm": "^2.11.1",
-        "yiisoft/data": "dev-master",
+        "cycle/database": "^2.15.1",
+        "cycle/orm": "^2.12.2",
+        "yiisoft/data": "^2.0",
         "yiisoft/var-dumper": "^1.7.1"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.19.0",
-        "friendsofphp/php-cs-fixer": "^3.91.3",
-        "phpunit/phpunit": "^12.5.3",
+        "friendsofphp/php-cs-fixer": "^3.92.3",
+        "phpunit/phpunit": "^12.5.4",
         "rector/rector": "^2.2.14",
         "roave/infection-static-analysis-plugin": ">=1.42",
         "spatie/phpunit-watcher": ">=1.24.0",
