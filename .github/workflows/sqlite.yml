@@ -20,6 +20,8 @@ on:
       - 'psalm.xml'
 
 name: sqlite
+permissions:
+  contents: read
 
 jobs:
   phpunit:
