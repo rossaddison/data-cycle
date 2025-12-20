@@ -17,6 +17,8 @@ on:
       - 'phpunit.xml.dist'
 
 name: mssql
+permissions:
+  contents: read
 
 jobs:
   tests:
