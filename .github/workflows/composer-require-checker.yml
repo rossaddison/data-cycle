@@ -23,6 +23,8 @@ on:
       - 'psalm.xml'
 
 name: Composer require checker
+permissions:
+  contents: read
 
 jobs:
   composer-require-checker:
