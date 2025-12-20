@@ -51,12 +51,6 @@ echo Invalid choice. Please try again.
 pause
 goto menu
 
-:composer_update
-echo Running Composer Update...
-composer update
-pause
-goto menu
-
 :psalm
 echo Running PHP Psalm...
 php vendor/bin/psalm
@@ -110,6 +104,12 @@ goto menu
 :rector_make_changes
 echo Make changes that Rector Proposed 
 php vendor/bin/rector
+pause
+goto menu
+
+:composer_update
+echo Running Composer Update...
+composer update
 pause
 goto menu
 
