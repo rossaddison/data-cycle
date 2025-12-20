@@ -22,6 +22,9 @@ on:
 
 name: mysql
 
+permissions:
+  contents: read
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
