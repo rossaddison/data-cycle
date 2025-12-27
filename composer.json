@@ -36,7 +36,7 @@
         "ext-mbstring": "*",
         "cycle/database": "^2.15.1",
         "cycle/orm": "^2.12.3",
-        "yiisoft/data": "^2.0",
+        "yiisoft/data": "dev-master",
         "yiisoft/var-dumper": "^1.7.1"
     },
     "require-dev": {
