@@ -27,10 +27,12 @@ final class AndXHandler implements QueryBuilderFilterHandler, FilterHandlerInter
         return [
             static function (QueryBuilder $select) use ($filter, $handlers) {
                 foreach ($filter->filters as $subFilter) {
-                    $handler = $handlers[$subFilter::class] ?? null;
-                    if ($handler === null) {
-                        throw new NotSupportedFilterException($subFilter::class);
-                    }
+                    /**
+                     * @psalm-param array<array-key, mixed> $handlers
+                     * @psalm-param class-string $subFilter::class
+                     * @psalm-var QueryBuilderFilterHandler $handler
+                     */
+                    $handler = $handlers[$subFilter::class];
                     $select->andWhere(...$handler->getAsWhereArguments($subFilter, $handlers));
                 }
             },

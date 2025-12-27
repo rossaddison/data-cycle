@@ -23,12 +23,12 @@ abstract class BaseReaderWithLikeTestCase extends \Yiisoft\Data\Tests\Common\Rea
     /**
      * Refer to logic code: tests\features\DataTrait e.g. $this->isSqlite() and $this->isSqlServer()
      * @param string $field
-     * @param string $value
+     * @param mixed $value
      * @param bool|null $caseSensitive
      * @param array $expectedFixtureIndexes
      */
     #[DataProvider('dataWithReader'), \Override]
-    public function testWithReader(string $field, string $value, ?bool $caseSensitive, array $expectedFixtureIndexes): void
+    public function testWithReader(string $field, mixed $value, ?bool $caseSensitive, array $expectedFixtureIndexes): void
     {
         // SQLite and SQL Server (MSSQL) are Not case sensitive for the LIKE operator by default.
 

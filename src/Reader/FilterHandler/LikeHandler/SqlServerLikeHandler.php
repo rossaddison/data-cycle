@@ -20,7 +20,7 @@ final class SqlServerLikeHandler extends BaseLikeHandler implements QueryBuilder
     public function getAsWhereArguments(FilterInterface $filter, array $handlers): array
     {
         /** @var Like $filter */
-        $pattern = $this->prepareValue($filter->value, $filter->mode);
+        $pattern = $this->prepareValue((string) $filter->value, $filter->mode);
 
         if ($filter->caseSensitive === true) {
             throw new NotSupportedFilterOptionException(optionName: 'caseSensitive', driverType: 'SQLServer');

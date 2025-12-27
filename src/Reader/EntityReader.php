@@ -19,6 +19,7 @@ use Yiisoft\Data\Reader\FilterInterface;
 use Yiisoft\Data\Reader\Sort;
 use Yiisoft\Data\Cycle\Reader\Cache\CachedCollection;
 use Yiisoft\Data\Cycle\Reader\Cache\CachedCount;
+use Yiisoft\Data\Cycle\Reader\QueryBuilderFilterHandler;
 
 /**
  * @template TKey as array-key
@@ -40,7 +41,7 @@ final class EntityReader implements DataReaderInterface
     private CachedCollection $itemsCache;
     private CachedCollection $oneItemCache;
     /**
-     * @psalm-var array<class-string, FilterHandlerInterface & QueryBuilderFilterHandler> $handlers
+     * @psalm-var array<string, QueryBuilderFilterHandler> $handlers
      */
     private array $filterHandlers = [];
 
@@ -167,7 +168,6 @@ final class EntityReader implements DataReaderInterface
     /**
      * @return static
      */
-    #[\Override]
     public function withAddedFilterHandlers(FilterHandlerInterface ...$filterHandlers): static
     {
         $new = clone $this;
@@ -237,6 +237,9 @@ final class EntityReader implements DataReaderInterface
     private function setFilterHandlers(FilterHandlerInterface ...$filterHandlers): void
     {
         $handlers = [];
+        /**
+         * @var QueryBuilderFilterHandler $filterHandler
+         */
         foreach ($filterHandlers as $filterHandler) {
             if ($filterHandler instanceof QueryBuilderFilterHandler) {
                 $handlers[$filterHandler->getFilterClass()] = $filterHandler;
@@ -266,10 +269,11 @@ final class EntityReader implements DataReaderInterface
     private function makeFilterClosure(FilterInterface $filter): Closure
     {
         return function (QueryBuilder $select) use ($filter) {
-            if (!array_key_exists($filter::class, $this->filterHandlers)) {
-                throw new NotSupportedFilterException($filter::class);
+            $filterClass = $filter::class;
+            if (!array_key_exists($filterClass, $this->filterHandlers)) {
+                throw new NotSupportedFilterException($filterClass);
             }
-            $handler = $this->filterHandlers[$filter::class];
+            $handler = $this->filterHandlers[$filterClass];
             $select->where(...$handler->getAsWhereArguments($filter, $this->filterHandlers));
         };
     }

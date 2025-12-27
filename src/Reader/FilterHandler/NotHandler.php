@@ -36,6 +36,12 @@ final class NotHandler implements QueryBuilderFilterHandler, FilterHandlerInterf
 
         $convertedFilter = $this->convertFilter($filter->filter);
         $handledFilter = $convertedFilter instanceof Not ? $convertedFilter->filter : $convertedFilter;
+        
+        /**
+         * @psalm-param array<array-key, mixed> $handlers
+         * @psalm-param class-string $handledFilter::class
+         * @psalm-var ?QueryBuilderFilterHandler $handler
+         */
         $handler = $handlers[$handledFilter::class] ?? null;
         if ($handler === null) {
             throw new NotSupportedFilterException($handledFilter::class);

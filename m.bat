@@ -114,8 +114,8 @@ pause
 goto menu
 
 :roave_infection_covered
-echo Running Roave Infection Static Analysis Plugin ... php vendor/bin/roave-infection-static-analysis-plugin --only-covered --min-msi=99 
-php vendor/bin/roave-infection-static-analysis-plugin --only-covered --min-msi=99
+echo Running Roave Infection Static Analysis Plugin ... php vendor/bin/roave-infection-static-analysis-plugin --only-covering-test-cases --min-msi=99 
+php vendor/bin/roave-infection-static-analysis-plugin --only-covering-test-cases --min-msi=99
 pause
 goto menu
 
